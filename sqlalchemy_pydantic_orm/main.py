@@ -15,6 +15,11 @@ class ORMBaseSchema(BaseModel):
     class Config:
         orm_mode = True
 
+    @property
+    @abstractmethod
+    def _orm_model(self) -> Type[DeclarativeMeta]:
+        pass
+
     def __init__(self, **data: Any):
         if not hasattr(config := self.Config, "orm_mode"):
             config.orm_mode = True
@@ -40,18 +45,13 @@ class ORMBaseSchema(BaseModel):
                 "Provided orm_model is not wrapped in a pydantic PrivateAttr"
             )
 
-    @property
-    @abstractmethod
-    def _orm_model(self) -> Type[DeclarativeMeta]:
-        pass
-
     def orm_create(self, **extra_fields: Any) -> DeclarativeMeta:
         current_level_fields = {}
         for field in self.__fields_set__:
             value = getattr(self, field)
-            field = self.__fields__[field].alias
+            field_name = self.__fields__[field].alias
             if isinstance(value, ORMBaseSchema):
-                current_level_fields[field] = value.orm_create()
+                current_level_fields[field_name] = value.orm_create()
             elif isinstance(value, (list, tuple, set)):
                 models = []
                 for schema in value:
@@ -63,22 +63,22 @@ class ORMBaseSchema(BaseModel):
                         )
                     models.append(schema.orm_create())
 
-                current_level_fields[field] = models
+                current_level_fields[field_name] = models
             else:
-                current_level_fields[field] = value
+                current_level_fields[field_name] = value
 
         return self._orm_model(**extra_fields, **current_level_fields)
 
     def orm_update(self, db: Session, db_model: DeclarativeMeta):
         for field in self.__fields_set__:
+            field_name = self.__fields__[field].alias
+            db_value = getattr(db_model, field_name)
             update_value = getattr(self, field)
-            field = self.__fields__[field].alias
-            db_value = getattr(db_model, field)
             if isinstance(update_value, ORMBaseSchema):
                 if db_value:
                     update_value.orm_update(db, db_value)
                 else:
-                    setattr(db_model, field, update_value.orm_create())
+                    setattr(db_model, field_name, update_value.orm_create())
             elif isinstance(update_value, list):
                 parsed_items = []
                 for update_item in update_value:
@@ -99,44 +99,44 @@ class ORMBaseSchema(BaseModel):
                     if db_item not in parsed_items:
                         db.delete(db_item)
             else:
-                setattr(db_model, field, update_value)
+                setattr(db_model, field_name, update_value)
 
 
-# def sqlalchemy_to_pydantic(
-#         db_model: Type, *,
-#         config: Type[BaseConfig] = _ORMBaseConfig,
-#         exclude: Container[str] = None
-# ) -> Type[BaseModel]:
-#     if exclude is None:
-#         exclude = []
-#
-#     mapper = inspect(db_model)
-#     fields = {}
-#     for attr in mapper.attrs:
-#         if isinstance(attr, ColumnProperty):
-#             if attr.columns:
-#                 name = attr.key
-#                 if name in exclude:
-#                     continue
-#                 column = attr.columns[0]
-#                 python_type: Optional[type] = None
-#                 if hasattr(column.type, "impl"):
-#                     if hasattr(column.type.impl, "python_type"):
-#                         python_type = column.type.impl.python_type
-#                 elif hasattr(column.type, "python_type"):
-#                     python_type = column.type.python_type
-#                 if not python_type:
-#                     raise ValueError(
-#                         f"Could not infer python_type for {column}"
-#                     )
-#                 default = None
-#                 if column.default is None and not column.nullable:
-#                     default = ...
-#                 fields[name] = (python_type, default)
-#     pydantic_model = create_model(
-#         db_model.__name__,
-#         __config__=config,
-#         __base__=ORMBaseSchema,
-#         **fields
-#     )
-#     return pydantic_model
+def sqlalchemy_to_pydantic(
+        db_model: Type, *,
+        config: Type[BaseConfig] = _ORMBaseConfig,
+        exclude: Container[str] = None
+) -> Type[BaseModel]:
+    if exclude is None:
+        exclude = []
+
+    mapper = inspect(db_model)
+    fields = {}
+    for attr in mapper.attrs:
+        if isinstance(attr, ColumnProperty):
+            if attr.columns:
+                name = attr.key
+                if name in exclude:
+                    continue
+                column = attr.columns[0]
+                python_type: Optional[type] = None
+                if hasattr(column.type, "impl"):
+                    if hasattr(column.type.impl, "python_type"):
+                        python_type = column.type.impl.python_type
+                elif hasattr(column.type, "python_type"):
+                    python_type = column.type.python_type
+                if not python_type:
+                    raise ValueError(
+                        f"Could not infer python_type for {column}"
+                    )
+                default = None
+                if column.default is None and not column.nullable:
+                    default = ...
+                fields[name] = (python_type, default)
+    pydantic_model = create_model(
+        db_model.__name__,
+        __config__=config,
+        __base__=ORMBaseSchema,
+        **fields
+    )
+    return pydantic_model
