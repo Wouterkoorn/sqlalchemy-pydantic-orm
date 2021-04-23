@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = "0.0.1"
+VERSION = "0.0.2"
 DESCRIPTION = "CRUD operations on nested SQLAlchemy ORM models using Pydantic"
 
 with open("README.md", "r") as file:
