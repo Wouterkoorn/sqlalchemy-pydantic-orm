@@ -1,2 +1,2 @@
 # sqlalchemy-pydantic
-Dynamic ORM operations using pydantic
+CRUD operations on nested SQLAlchemy ORM models using Pydantic

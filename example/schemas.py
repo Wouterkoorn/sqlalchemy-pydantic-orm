@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from pydantic import PrivateAttr
 from sqlalchemy.orm.decl_api import DeclarativeMeta
-from sqlalchemy_pydantic import ORMBaseSchema
+from sqlalchemy_pydantic_orm import ORMBaseSchema
 
 import models
 

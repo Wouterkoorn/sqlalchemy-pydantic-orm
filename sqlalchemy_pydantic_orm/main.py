@@ -21,7 +21,7 @@ class ORMBaseSchema(BaseModel):
         elif not config.orm_mode:
             # Throwing an error instead of overwriting to prevent confusion
             raise ValueError(
-                "sqlalchemy_pydantic: "
+                "sqlalchemy-pydantic-orm: "
                 "When adding your own 'Config' class, "
                 "make sure you set 'orm_mode' to 'true'"
             )
@@ -30,13 +30,13 @@ class ORMBaseSchema(BaseModel):
 
         if type(self._orm_model) != DeclarativeMeta:
             raise ValueError(
-                "sqlalchemy_pydantic: "
+                "sqlalchemy-pydantic-orm: "
                 "Provided orm_model is not a valid SQLAlchemy model, "
                 "make sure it inherits the declarative base"
             )
         elif "_orm_model" not in self.__private_attributes__:
             raise ValueError(
-                "sqlalchemy_pydantic: "
+                "sqlalchemy-pydantic-orm: "
                 "Provided orm_model is not wrapped in a pydantic PrivateAttr"
             )
 
@@ -57,7 +57,7 @@ class ORMBaseSchema(BaseModel):
                 for schema in value:
                     if not isinstance(schema, ORMBaseSchema):
                         raise ValueError(
-                            "sqlalchemy_pydantic: "
+                            "sqlalchemy-pydantic-orm: "
                             "Lists should only contain other schemas "
                             f"inherited from '{ORMBaseSchema.__name__}'"
                         )
