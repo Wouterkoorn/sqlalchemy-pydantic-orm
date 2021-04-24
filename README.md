@@ -1,5 +1,11 @@
 # sqlalchemy-pydantic-orm
 CRUD operations on nested SQLAlchemy ORM models using Pydantic schemas.
+
+
+# Requirements
+- Python 3.8+
+
+
 # Installation
 ```shell
 $ pip install sqlalchemy-pydantic-orm
@@ -9,13 +15,16 @@ To tinker with the code yourself, install the full dependencies with:
 $ pip install sqlalchemy-pydantic-orm[dev]
 ```
 
+
 # Examples
 Below 2 small examples are provided. 
 The first one is a more manual setup, the second does all the work for you.
 For a bigger and more detailed examples you can look at the ./examples folder.
+
 ## Example 1 - Using manual created schemas
 Create your own Pydantic schemas and link them to the SQLAlchemy ORM-models.
-### Create your SQLAlchemy ORM-models (one-to-many or one-to-one)
+
+### Create your SQLAlchemy ORM-models (one-to-one or one-to-many)
 ```python
 class Parent(Base):
     id = Column(Integer, primary_key=True, index=True, nullable=False)
@@ -34,7 +43,9 @@ class Child(Base):
     name = Column(String, nullable=False)
     parent_id = Column(Integer, ForeignKey("parents.id"), nullable=False)
 ```
-### Create your Pydantic base and CRU~~D~~ schemas using these ORM models, and the imported ORMBaseSchema
+
+### Create your Pydantic base and CRUD schemas using these ORM models, and the imported ORMBaseSchema
+
 #### Base schemas
 ```python
 from sqlalchemy_pydantic_orm import ORMBaseSchema
@@ -52,6 +63,7 @@ class ChildBase(ORMBaseSchema):
     name: str
     _orm_model = PrivateAttr(models.Child)
 ```
+
 #### GET schemas
 ```python
 class Parent(ParentBase):
@@ -65,6 +77,7 @@ class Car(CarBase):
 class Child(ChildBase):
     id: int
 ```
+
 #### CREATE/UPDATE schemas
 ```python
 class ParentCreate(ParentBase):
@@ -78,6 +91,7 @@ class CarCreate(CarBase):
 class ChildCreate(ChildBase):
     id: Optional[int]
 ```
+
 ### Use your schemas to do nested CRU~~D~~ operations.
 ```python
 with ConnectionDatabase() as db:
@@ -100,6 +114,7 @@ Note: with `.orm_create()` you have to call `db.add()`
 before calling `db.commit()`. 
 With orm_update you give the db session as parameter,
 and you only have to call `db.commit()`.
+
 
 ## Example 2 - Using generated schemas
 TODO: Integrate with https://github.com/tiangolo/pydantic-sqlalchemy

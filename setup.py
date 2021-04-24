@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = "0.0.4"
+VERSION = "0.0.5"
 DESCRIPTION = "CRUD operations on nested SQLAlchemy ORM-models using Pydantic"
 
 with open("README.md", "r") as file:
@@ -25,6 +25,8 @@ setup(
         "dev": [
             "pytest >= 6.2.3",
             "pdoc3 >= 0.9.2",
+            "flake8 >= 3.9.1",
+            "black >= 20.8"
             # "mypy >= 0.812"
         ]
     },
@@ -36,7 +38,7 @@ setup(
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
-        "License :: OSI Approved :: The Unlicense (Unlicense)",
+        "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Database",

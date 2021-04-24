@@ -53,7 +53,7 @@ class Car(Base):
 
 class PydanticCar(ORMBaseSchema):
     id: Optional[int]
-    colorrrr: str = Field(alias="color")  # mostly used for reserved names
+    colour: str = Field(alias="color")  # mostly used for reserved names
 
     _orm_model = PrivateAttr(Car)
 
@@ -80,6 +80,7 @@ class PydanticParent(ORMBaseSchema):
     car: PydanticCar
 
     _orm_model = PrivateAttr(Parent)
+
 
 orm_create_input_data = {
     "name": "Bob",

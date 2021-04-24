@@ -62,4 +62,3 @@ with ConnectionDatabase() as db:
 
     db_update_schema = schemas.Parent.from_orm(parent_db)
     print(db_update_schema.dict())
-

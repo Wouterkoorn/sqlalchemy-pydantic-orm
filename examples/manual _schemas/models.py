@@ -11,7 +11,9 @@ class Parent(Base):
     name = Column(String, nullable=False)
 
     children = relationship("Child", cascade="all, delete")
-    car = relationship("Car", cascade="all, delete", uselist=False, back_populates="owner")
+    car = relationship(
+        "Car", cascade="all, delete", uselist=False, back_populates="owner"
+    )
 
 
 class Child(Base):
