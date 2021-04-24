@@ -1,15 +1,14 @@
-from typing import List, Optional
+from __future__ import annotations
 
-from pydantic import PrivateAttr, Field
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship, Session
+from typing import Optional, List
+
+from pydantic import Field, PrivateAttr
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship, declarative_base
 
 from sqlalchemy_pydantic_orm import ORMBaseSchema
 
-engine = create_engine('sqlite://', echo=False)
-DatabaseSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
+Base = declarative_base()  # noqa
 
 
 class Parent(Base):
@@ -81,10 +80,6 @@ class PydanticParent(ORMBaseSchema):
     car: PydanticCar
 
     _orm_model = PrivateAttr(Parent)
-
-
-Base.metadata.create_all(bind=engine)
-db: Session = DatabaseSession()
 
 orm_create_input_data = {
     "name": "Bob",

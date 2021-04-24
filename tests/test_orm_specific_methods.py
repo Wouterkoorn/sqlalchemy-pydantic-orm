@@ -1,7 +1,9 @@
-import pytest
+import pytest  # noqa: F401
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 from main import (
-    db,
+    Base,
     Parent,
     PydanticParent,
     orm_create_input_data,
@@ -9,6 +11,13 @@ from main import (
     orm_update_input_data,
     orm_update_output_data
 )
+
+engine = create_engine('sqlite://', echo=False)
+Base.metadata.create_all(bind=engine)
+DatabaseSession = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine
+)
+db: Session = DatabaseSession()
 
 
 def test_orm_create():
@@ -21,9 +30,9 @@ def test_orm_create():
     assert schema_out.dict(by_alias=True) == orm_create_output_data
 
 
-def test_orm_update():
+def test_orm_update():  # only works after test_orm_create()
     schema_in = PydanticParent.parse_obj(orm_update_input_data)
-    db_model = db.query(Parent).one()
+    db_model = db.query(Parent).get(schema_in.id)
     schema_in.orm_update(db, db_model)
     db.commit()
     db.refresh(db_model)
