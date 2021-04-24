@@ -17,12 +17,11 @@ setup(
     long_description_content_type="text/markdown",
     long_description=LONG_DESCRIPTION,
     packages=find_packages(),
-    package_dir={"": "sqlalchemy_pydantic_orm"},
     install_requires=[
         "pydantic ~= 1.8.1",
         "sqlalchemy ~= 1.4.11"
     ],
-    extra_require={
+    extras_require={
         "dev": [
             "pytest >= 6.2.3",
             "pdoc3 >= 0.9.2",
