@@ -101,5 +101,5 @@ before calling `db.commit()`.
 With orm_update you give the db session as parameter,
 and you only have to call `db.commit()`.
 
-## Example 2 - Usign generated schemas
+## Example 2 - Using generated schemas
 TODO: Integrate with https://github.com/tiangolo/pydantic-sqlalchemy
