@@ -8,17 +8,14 @@ To tinker with the code yourself, install the full dependencies with:
 ```shell
 $ pip install sqlalchemy-pydantic-orm[dev]
 ```
-# Imports
-```python
-from sqlalchemy_pydantic_orm import ORMBaseSchema, sqlalchemy_to_pydantic
-```
+
 # Examples
 Below 2 small examples are provided. 
 The first one is a more manual setup, the second does all the work for you.
 For a bigger and more detailed examples you can look at the ./examples folder.
-## Example 1
-Create your own Pydantic schemas and link them to the SQLAlchemy ORM models.
-### Create your SQLAlchemy ORM models (one-to-many or one-to-one)
+## Example 1 - Using manual created schemas
+Create your own Pydantic schemas and link them to the SQLAlchemy ORM-models.
+### Create your SQLAlchemy ORM-models (one-to-many or one-to-one)
 ```python
 class Parent(Base):
     id = Column(Integer, primary_key=True, index=True, nullable=False)
@@ -99,9 +96,10 @@ with ConnectionDatabase() as db:
     db_update_schema = schemas.Parent.from_orm(parent_db)
     print(db_update_schema.dict())
 ```
-Note: with orm_create you have to call db.add() yourself and then db.commit(). 
+Note: with `.orm_create()` you have to call `db.add()`
+before calling `db.commit()`. 
 With orm_update you give the db session as parameter,
-and you only have to call db.commit() afterwards.
+and you only have to call `db.commit()`.
 
-## Example 2
-TODO
+## Example 2 - Usign generated schemas
+TODO: Integrate with https://github.com/tiangolo/pydantic-sqlalchemy

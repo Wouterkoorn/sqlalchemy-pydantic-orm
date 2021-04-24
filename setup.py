@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
-VERSION = "0.0.2"
-DESCRIPTION = "CRUD operations on nested SQLAlchemy ORM models using Pydantic"
+VERSION = "0.0.3"
+DESCRIPTION = "CRUD operations on nested SQLAlchemy ORM-models using Pydantic"
 
 with open("README.md", "r") as file:
     LONG_DESCRIPTION = file.read()
@@ -24,18 +24,24 @@ setup(
     extra_require={
         "dev": [
             "pytest >= 6.2.3",
-            "mypy >= 0.812"
+            # "mypy >= 0.812"
         ]
     },
     keywords=[
         "python", "pydantic", "sqlalchemy", "ORM", "nested", "nesting", "CRUD"
     ],
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 3",
-        "Operating System :: Unix",
-        "Operating System :: MacOS :: MacOS X",
-        "Operating System :: Microsoft :: Windows",
+        "Operating System :: OS Independent"
+        "License :: OSI Approved :: The Unlicense (Unlicense)",
+        "Natural Language :: English",
+        "Topic :: Software Development :: Libraries :: Python Modules"
+        "Topic :: Database",
+        "Topic :: Database :: Database Engines/Servers",
+        "Topic :: Software Development :: Version Control :: Git",
+        "Topic :: Software Development :: Testing :: Unit",
+        "Typing :: Typed"
     ]
 )

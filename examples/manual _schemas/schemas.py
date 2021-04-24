@@ -17,7 +17,7 @@ class CarBase(ORMBaseSchema):
 
     # _orm_model = 5  # Throws error
     # _orm_model = models.Car  # Throws error
-    _orm_model = PrivateAttr(models.Car)
+    _orm_model = PrivateAttr(models.Car)  # valid
 
 
 class PopsicleBase(ORMBaseSchema):

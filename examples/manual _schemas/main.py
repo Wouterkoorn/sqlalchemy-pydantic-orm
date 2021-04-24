@@ -8,11 +8,17 @@ create_dict = {
     "children": [
         {
             "name": "Tim",
-            "popsicles": [{"flavor": "Strawberry"}]
+            "popsicles": [
+                {"flavor": "Strawberry"}
+            ]
         },
         {
             "name": "Ana",
-            "popsicles": [{"flavor": "Melon"}, {"flavor": "Orange"}, {"flavor": "Cola"}]
+            "popsicles": [
+                {"flavor": "Melon"},
+                {"flavor": "Orange"},
+                {"flavor": "Cola"}
+            ]
         }
     ],
     "car": {"color": "Blue"}
@@ -25,11 +31,17 @@ update_dict = {
         {
             "name": "Jane",
             "id": 2,
-            "popsicles": [{"flavor": "Lemon", "id": 2}, {"flavor": "Cola", "id": 4}, {"flavor": "Apple"}]
+            "popsicles": [
+                {"flavor": "Lemon", "id": 2},
+                {"flavor": "Cola", "id": 4},
+                {"flavor": "Apple"}
+            ]
         },
         {
             "name": "Jack",
-            "popsicles": [{"flavor": "Strawberry"}]
+            "popsicles": [
+                {"flavor": "Strawberry"}
+            ]
         },
     ],
     "car": {"color": "Red", "id": 1}
@@ -44,9 +56,10 @@ with ConnectionDatabase() as db:
     db_create_schema = schemas.Parent.from_orm(parent_db)
     print(db_create_schema.dict())
 
-    # update_schema = schemas.ParentUpdate.parse_obj(update_dict)
-    # update_schema.to_orm(db)
-    # db.commit()
-    #
-    # db_update_schema = schemas.Parent.from_orm(parent_db)
-    # print(db_update_schema.dict())
+    update_schema = schemas.ParentCreate.parse_obj(update_dict)
+    update_schema.orm_update(db, parent_db)
+    db.commit()
+
+    db_update_schema = schemas.Parent.from_orm(parent_db)
+    print(db_update_schema.dict())
+
