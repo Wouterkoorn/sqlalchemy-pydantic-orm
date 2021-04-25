@@ -1,43 +1,38 @@
-"""TODO: Module documentation"""
+"""
+This is the main and also the only module of the sqlalchemy-pydantic-orm
+package. It consists of one class called ORMBaseSchema, which contains all the
+functionality. In the future there will also be a methods that generates
+schemas from SQLAlchemy models.
+
+
+The ORMBaseSchema is an extension of the Pydantic's BaseModel. It can use the
+fields defined in it's own schema to create a SQLAlchemy model, it can do that
+by using a mandatory predefined link to a corresponding SQLAlchemy model.
+
+References:
+    https://pydantic-docs.helpmanual.io/usage/models/
+    https://fastapi.tiangolo.com/tutorial/sql-databases/
+"""
 
 from abc import abstractmethod
+from collections import deque
 from typing import Any, Type
 
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 
-SUPPORTED_ITERABLES = (list, tuple, set)  # Could be extended
+SUPPORTED_ITERABLES = (list, tuple, set, deque)  # Could be extended
 
 
 class ORMBaseSchema(BaseModel):
-    """TODO: Class documentation"""
-
     class Config:
         """Pydantic's default config class except with orm_mode set to True."""
 
         orm_mode = True
 
-    @property
-    @abstractmethod
-    def _orm_model(self) -> Type[DeclarativeMeta]:
-        """The corresponding SQLAlchemy model class
-
-        The property decorator is used together with the @abstractmethod
-        decorator to enforce assignment.
-
-        This variable/property has a leading underscore and can only be
-        assigned as PrivateAttr (Pydantic). This is because a Pydantic schema
-        iterates over it's own fields and would otherwise cause problems when
-        encountering this variable/property.
-
-        Returns:
-            A SQLAlchemy model (indirectly) inherited from DeclarativeMeta
-        """
-        pass
-
     def __init__(self, **data: Any):
-        """Init used for validation and throwing errors where needed.
+        """The init is used for validation and throwing errors where needed.
 
         Pydantic catches all ValueError's in initialization, and then outputs
         the error message in a easy to read format with the specific class
@@ -82,6 +77,24 @@ class ORMBaseSchema(BaseModel):
                 "sqlalchemy-pydantic-orm: "
                 "Provided orm_model is not wrapped in a pydantic PrivateAttr"
             )
+
+    @property
+    @abstractmethod
+    def _orm_model(self) -> Type[DeclarativeMeta]:
+        """The corresponding SQLAlchemy model class
+
+        The property decorator is used together with the @abstractmethod
+        decorator to enforce assignment.
+
+        This variable/property has a leading underscore and can only be
+        assigned as PrivateAttr (Pydantic). This is because a Pydantic schema
+        iterates over it's own fields and would otherwise cause problems when
+        encountering this variable/property.
+
+        Returns:
+            A SQLAlchemy model (indirectly) inherited from DeclarativeMeta
+        """
+        pass
 
     def orm_create(self, **extra_fields: Any) -> DeclarativeMeta:
         """Method to convert a (nested) pydantic schema to a SQLAlchemy model.
@@ -251,49 +264,3 @@ class ORMBaseSchema(BaseModel):
             db.add(db_model)
 
         return db_model
-
-
-# class _ORMBaseConfig(BaseConfig):
-#     orm_mode = True
-#
-#
-# def sqlalchemy_to_pydantic(
-#         db_model: Type, *,
-#         exclude: Container[str] = None,
-# ) -> Type[BaseModel]:
-#     if exclude is None:
-#         exclude = ()
-#
-#     mapper = inspect(db_model)
-#     fields = {}
-#     for attr in mapper.attrs:
-#         if isinstance(attr, ColumnProperty):
-#             if attr.columns:
-#                 name = attr.key
-#                 if name in exclude:
-#                     continue
-#                 column = attr.columns[0]
-#                 python_type: Optional[type] = None
-#                 if hasattr(column.type, "impl"):
-#                     if hasattr(column.type.impl, "python_type"):
-#                         python_type = column.type.impl.python_type
-#                 elif hasattr(column.type, "python_type"):
-#                     python_type = column.type.python_type
-#                 if not python_type:
-#                     raise ValueError(
-#                         f"Could not infer python_type for {column} "
-#                         "(sqlalchemy-pydantic-orm)"
-#                     )
-#                 default = None
-#                 if column.default is None and not column.nullable:
-#                     default = ...
-#
-#                 fields[name] = (python_type, default)
-#
-#     fields["_orm_model"] = PrivateAttr(db_model)
-#     pydantic_model = create_model(
-#         db_model.__name__,
-#         __base__=ORMBaseSchema,  # Cant go together with __config__
-#         **fields
-#     )
-#     return pydantic_model

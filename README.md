@@ -1,10 +1,23 @@
 # sqlalchemy-pydantic-orm
-CRUD operations on nested SQLAlchemy ORM models using Pydantic schemas.
+This library makes it a lot easier to do nested database operation with 
+SQLAlchemy. With this library it is possible for example to validate, convert, 
+and upload a 100-level deep nested JSON (dict) to its corresponding tables in a 
+given database, within 3 lines of code. 
+
+[Pydantic](https://pydantic-docs.helpmanual.io/) is used for creating the 
+dataclass and validating it. Pydantic already has a function called
+[`.from_orm()`](https://pydantic-docs.helpmanual.io/usage/models/#orm-mode-aka-arbitrary-class-instances) 
+that can do a nested get operation, but it only supports ORM -> Pydantic and 
+not Pydantic -> ORM. That's exactly where this library fills in, with 2 
+specific functions `.orm_create()` and `.orm_update()`, and one general 
+function `.to_orm()` that combines the functionality of the first 2, calling 
+one or the other, depending on if there is an id provided.
 
 
 # Requirements
 - Python 3.8+
-
+- SQLAlchemy 1.4+
+- Pydantic 1.8+
 
 # Installation
 ```shell
@@ -15,11 +28,16 @@ To tinker with the code yourself, install the full dependencies with:
 $ pip install sqlalchemy-pydantic-orm[dev]
 ```
 
+# Useful references
+- https://pydantic-docs.helpmanual.io/usage/models/
+- https://fastapi.tiangolo.com/tutorial/sql-databases/
+
 
 # Examples
-Below 2 small examples are provided. 
-The first one is a more manual setup, the second does all the work for you.
-For a bigger and more detailed examples you can look at the ./examples folder.
+Below 1 example is provided (more coming).
+
+[comment]: <> (The first one is a more manual setup, the second does all the work for you.)
+For a bigger and more detailed example you can look at the /examples/ folder.
 
 ## Example 1 - Using manual created schemas
 Create your own Pydantic schemas and link them to the SQLAlchemy ORM-models.
@@ -107,7 +125,7 @@ with ConnectionDatabase() as db:
     update_schema.to_orm(db)
     db.commit()
 
-    db_update_schema = schemas.Parent.from_orm(parent_db)
+    db_update_schema = schemas.Parent.orm_update(parent_db)
     print(db_update_schema.dict())
 ```
 Note: with `.orm_create()` you have to call `db.add()`
@@ -116,5 +134,5 @@ With orm_update you give the db session as parameter,
 and you only have to call `db.commit()`.
 
 
-## Example 2 - Using generated schemas
+## ~~Example 2 - Using generated schemas~~
 TODO: Integrate with https://github.com/tiangolo/pydantic-sqlalchemy

@@ -27,7 +27,7 @@ isort sqlalchemy_pydantic_orm/ examples/ tests/ setup.py
 
 
 printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
-echo "Reviewing code type hinting with mypy"
+echo "Reviewing type hints with mypy"
 printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
 
 mypy sqlalchemy_pydantic_orm/ examples/ tests/ setup.py
