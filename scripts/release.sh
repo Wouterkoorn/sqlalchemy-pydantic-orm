@@ -7,21 +7,21 @@ IFS=$'\n\t'
 NAME=$(python setup.py --name)
 VERSION=$(python setup.py --version)
 
-echo "========================================================================"
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
 echo "Building $NAME v$VERSION with setuptools"
-echo "========================================================================"
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
 
 python setup.py sdist bdist_wheel
 
-echo "========================================================================"
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
 echo "Releasing $NAME v$VERSION on PyPI with twine"
-echo "========================================================================"
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
 
 twine upload dist/*
 
-echo "========================================================================"
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
 echo "Tagging $NAME v$VERSION on Github"
-echo "========================================================================"
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
 
 git tag -a "v$VERSION"
 git push origin "v$VERSION"

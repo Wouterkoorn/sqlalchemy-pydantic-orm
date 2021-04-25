@@ -1,16 +1,24 @@
 from setuptools import find_packages, setup
 
-VERSION = "0.0.5"
+VERSION = "0.1.0"
 DESCRIPTION = "CRUD operations on nested SQLAlchemy ORM-models using Pydantic"
+
+SOURCE_URL = "https://github.com/Wouterkoorn/sqlalchemy-pydantic-orm"
+DOCS_URL = "https://wouterkoorn.github.io/sqlalchemy-pydantic-orm/index.html"
+TRACKER_URL = "https://github.com/Wouterkoorn/sqlalchemy-pydantic-orm/issues"
 
 with open("README.md", "r") as file:
     LONG_DESCRIPTION = file.read()
 
-# Setting up
 setup(
     name="sqlalchemy-pydantic-orm",
     version=VERSION,
-    url="https://github.com/Wouterkoorn/sqlalchemy-pydantic-orm",
+    url=SOURCE_URL,
+    project_urls={
+        "Source": SOURCE_URL,
+        "Documentation": DOCS_URL,
+        "Tracker": TRACKER_URL,
+    },
     author="wkoorn (Wouter Koorn)",
     author_email="<wouter.koorn@student.hu.nl>",
     description=DESCRIPTION,

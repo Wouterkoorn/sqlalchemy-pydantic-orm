@@ -3,7 +3,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 
-class Parent(Base):
+class Parent(Base):  # type: ignore
     __tablename__ = "parents"
 
     id = Column(Integer, primary_key=True, index=True, nullable=False)
@@ -15,7 +15,7 @@ class Parent(Base):
     )
 
 
-class Child(Base):
+class Child(Base):  # type: ignore
     __tablename__ = "children"
 
     id = Column(Integer, primary_key=True, index=True, nullable=False)
@@ -25,7 +25,7 @@ class Child(Base):
     popsicles = relationship("Popsicle", cascade="all, delete")
 
 
-class Popsicle(Base):
+class Popsicle(Base):  # type: ignore
     __tablename__ = "popsicles"
 
     id = Column(Integer, primary_key=True, index=True, nullable=False)
@@ -33,7 +33,7 @@ class Popsicle(Base):
     child_id = Column(Integer, ForeignKey("children.id"), nullable=False)
 
 
-class Car(Base):
+class Car(Base):  # type: ignore
     __tablename__ = "cars"
 
     id = Column(Integer, primary_key=True, index=True, nullable=False)

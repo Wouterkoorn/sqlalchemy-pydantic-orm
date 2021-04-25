@@ -17,7 +17,7 @@ DatabaseSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 db: Session = DatabaseSession()
 
 
-def test_to_orm_create():
+def test_to_orm_create() -> None:
     schema_in = PydanticParent.parse_obj(orm_create_input_data)
     db_model = schema_in.to_orm(db)
     db.commit()
@@ -26,7 +26,7 @@ def test_to_orm_create():
     assert schema_out.dict(by_alias=True) == orm_create_output_data
 
 
-def test_to_orm_update():
+def test_to_orm_update() -> None:
     schema_in = PydanticParent.parse_obj(orm_update_input_data)
     db_model = schema_in.to_orm(db)
     db.commit()

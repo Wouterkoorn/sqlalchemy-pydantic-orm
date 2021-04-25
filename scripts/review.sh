@@ -1,29 +1,39 @@
 #!/usr/bin/env bash
 
-echo "========================================================================"
+set -euo pipefail
+IFS=$'\n\t'
+
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
 echo "Running tests with coverage and pytest"
 
 coverage run -m pytest tests/
 
 echo "Coverage report"
-echo "========================================================================"
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
 
 coverage report -m
 
-echo "========================================================================"
-echo "Reviewing code with flake8"
-echo "========================================================================"
-
-flake8
-
-echo "========================================================================"
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
 echo "Reformatting code with black"
-echo "========================================================================"
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
 
 black sqlalchemy_pydantic_orm/ examples/ tests/ setup.py
 
-echo "========================================================================"
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
 echo "Reordering imports with isort"
-echo "========================================================================"
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
 
 isort sqlalchemy_pydantic_orm/ examples/ tests/ setup.py
+
+
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
+echo "Reviewing code type hinting with mypy"
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
+
+mypy sqlalchemy_pydantic_orm/ examples/ tests/ setup.py
+
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
+echo "Reviewing code style with flake8"
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
+
+flake8
