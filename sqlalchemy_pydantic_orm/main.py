@@ -10,8 +10,8 @@ fields defined in it's own schema to create a SQLAlchemy model, it can do that
 by using a mandatory predefined link to a corresponding SQLAlchemy model.
 
 References:
-    https://pydantic-docs.helpmanual.io/usage/models/
-    https://fastapi.tiangolo.com/tutorial/sql-databases/
+    - https://pydantic-docs.helpmanual.io/usage/models/
+    - https://fastapi.tiangolo.com/tutorial/sql-databases/
 """
 
 from abc import abstractmethod
