@@ -1,6 +1,6 @@
 """
 This library makes it a lot easier to do nested database operation with
-SQLAlchemy. With this library it is possible for example to validate, convert,
+SQLAlchemy. With this library it is for example possible to validate, convert,
 and upload a 100-level deep nested JSON (dict) to its corresponding tables in a
 given database, within 3 lines of code.
 
