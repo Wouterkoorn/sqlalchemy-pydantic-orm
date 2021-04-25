@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 VERSION = "0.0.5"
 DESCRIPTION = "CRUD operations on nested SQLAlchemy ORM-models using Pydantic"
@@ -17,21 +17,26 @@ setup(
     long_description_content_type="text/markdown",
     long_description=LONG_DESCRIPTION,
     packages=find_packages(),
-    install_requires=[
-        "pydantic ~= 1.8.1",
-        "sqlalchemy ~= 1.4.11"
-    ],
+    python_requires=">=3.8",
+    install_requires=["pydantic ~= 1.8.1", "sqlalchemy ~= 1.4.11"],
     extras_require={
         "dev": [
             "pytest >= 6.2.3",
-            "pdoc3 >= 0.9.2",
+            "coverage >= 5.5",
             "flake8 >= 3.9.1",
-            "black >= 20.8"
-            # "mypy >= 0.812"
+            "black >= 20.8",
+            "mypy >= 0.812",
+            "pdoc3 >= 0.9.2",
         ]
     },
     keywords=[
-        "python", "pydantic", "sqlalchemy", "ORM", "nested", "nesting", "CRUD"
+        "python",
+        "pydantic",
+        "sqlalchemy",
+        "ORM",
+        "nested",
+        "nesting",
+        "CRUD",
     ],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
@@ -46,5 +51,5 @@ setup(
         "Topic :: Software Development :: Version Control :: Git",
         "Topic :: Software Development :: Testing :: Unit",
         "Typing :: Typed",
-    ]
+    ],
 )

@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session, sessionmaker
 
-engine = create_engine('sqlite://', echo=False)  # SQLLite memory database
+engine = create_engine("sqlite://", echo=False)  # SQLLite memory database
 
 DatabaseSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

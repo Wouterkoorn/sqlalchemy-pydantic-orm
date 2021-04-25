@@ -1,27 +1,22 @@
 import schemas
-from database import ConnectionDatabase, engine, Base
+from database import Base, ConnectionDatabase, engine
 
 Base.metadata.create_all(bind=engine)
 
 create_dict = {
     "name": "Bob",
     "children": [
-        {
-            "name": "Tim",
-            "popsicles": [
-                {"flavor": "Strawberry"}
-            ]
-        },
+        {"name": "Tim", "popsicles": [{"flavor": "Strawberry"}]},
         {
             "name": "Ana",
             "popsicles": [
                 {"flavor": "Melon"},
                 {"flavor": "Orange"},
-                {"flavor": "Cola"}
-            ]
-        }
+                {"flavor": "Cola"},
+            ],
+        },
     ],
-    "car": {"color": "Blue"}
+    "car": {"color": "Blue"},
 }
 
 update_dict = {
@@ -34,17 +29,12 @@ update_dict = {
             "popsicles": [
                 {"flavor": "Lemon", "id": 2},
                 {"flavor": "Cola", "id": 4},
-                {"flavor": "Apple"}
-            ]
+                {"flavor": "Apple"},
+            ],
         },
-        {
-            "name": "Jack",
-            "popsicles": [
-                {"flavor": "Strawberry"}
-            ]
-        },
+        {"name": "Jack", "popsicles": [{"flavor": "Strawberry"}]},
     ],
-    "car": {"color": "Red", "id": 1}
+    "car": {"color": "Red", "id": 1},
 }
 
 with ConnectionDatabase() as db:

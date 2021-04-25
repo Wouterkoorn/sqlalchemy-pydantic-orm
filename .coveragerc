@@ -1,0 +1,7 @@
+[run]
+
+source =
+    sqlalchemy_pydantic_orm/
+    tests/
+
+;parallel = True

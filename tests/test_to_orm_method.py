@@ -2,20 +2,18 @@ import pytest  # noqa: F401
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from main import (
+from .main import (
     Base,
     PydanticParent,
     orm_create_input_data,
     orm_create_output_data,
     orm_update_input_data,
-    orm_update_output_data
+    orm_update_output_data,
 )
 
-engine = create_engine('sqlite://', echo=False)
+engine = create_engine("sqlite://", echo=False)
 Base.metadata.create_all(bind=engine)
-DatabaseSession = sessionmaker(
-    autocommit=False, autoflush=False, bind=engine
-)
+DatabaseSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 db: Session = DatabaseSession()
 
 

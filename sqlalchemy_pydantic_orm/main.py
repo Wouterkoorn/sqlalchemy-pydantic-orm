@@ -1,7 +1,7 @@
 """TODO: Module documentation"""
 
 from abc import abstractmethod
-from typing import Type, Any
+from typing import Any, Type
 
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -15,6 +15,7 @@ class ORMBaseSchema(BaseModel):
 
     class Config:
         """Pydantic's default config class except with orm_mode set to True."""
+
         orm_mode = True
 
     @property
@@ -250,6 +251,7 @@ class ORMBaseSchema(BaseModel):
             db.add(db_model)
 
         return db_model
+
 
 # class _ORMBaseConfig(BaseConfig):
 #     orm_mode = True

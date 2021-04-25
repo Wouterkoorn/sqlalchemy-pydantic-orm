@@ -1,10 +1,8 @@
-from __future__ import annotations
-
-from typing import Optional, List
+from typing import List, Optional
 
 from pydantic import Field, PrivateAttr
-from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy.orm import declarative_base, relationship
 
 from sqlalchemy_pydantic_orm import ORMBaseSchema
 
@@ -85,30 +83,17 @@ class PydanticParent(ORMBaseSchema):
 orm_create_input_data = {
     "name": "Bob",
     "children": [
-        {
-            "name": "Tim",
-            "popsicles": [
-                {"flavor": "Strawberry"}
-            ]
-        },
+        {"name": "Tim", "popsicles": [{"flavor": "Strawberry"}]},
         {
             "name": "Ana",
             "popsicles": [
-                {
-                    "flavor": "Melon"
-                },
-                {
-                    "flavor": "Orange"
-                },
-                {
-                    "flavor": "Cola"
-                }
-            ]
-        }
+                {"flavor": "Melon"},
+                {"flavor": "Orange"},
+                {"flavor": "Cola"},
+            ],
+        },
     ],
-    "car": {
-        "color": "Blue"
-    }
+    "car": {"color": "Blue"},
 }
 
 orm_create_output_data = {
@@ -118,36 +103,19 @@ orm_create_output_data = {
         {
             "name": "Tim",
             "id": 1,
-            "popsicles": [
-                {
-                    "flavor": "Strawberry",
-                    "id": 1
-                }
-            ]
+            "popsicles": [{"flavor": "Strawberry", "id": 1}],
         },
         {
             "name": "Ana",
             "id": 2,
             "popsicles": [
-                {
-                    "flavor": "Melon",
-                    "id": 2
-                },
-                {
-                    "flavor": "Orange",
-                    "id": 3
-                },
-                {
-                    "flavor": "Cola",
-                    "id": 4
-                }
-            ]
-        }
+                {"flavor": "Melon", "id": 2},
+                {"flavor": "Orange", "id": 3},
+                {"flavor": "Cola", "id": 4},
+            ],
+        },
     ],
-    "car": {
-        "color": "Blue",
-        "id": 1
-    }
+    "car": {"color": "Blue", "id": 1},
 }
 
 orm_update_input_data = {
@@ -158,32 +126,14 @@ orm_update_input_data = {
             "name": "Jane",
             "id": 2,
             "popsicles": [
-                {
-                    "flavor": "Lemon",
-                    "id": 2
-                },
-                {
-                    "flavor": "Cola",
-                    "id": 4
-                },
-                {
-                    "flavor": "Apple"
-                }
-            ]
+                {"flavor": "Lemon", "id": 2},
+                {"flavor": "Cola", "id": 4},
+                {"flavor": "Apple"},
+            ],
         },
-        {
-            "name": "Jack",
-            "popsicles": [
-                {
-                    "flavor": "Strawberry"
-                }
-            ]
-        }
+        {"name": "Jack", "popsicles": [{"flavor": "Strawberry"}]},
     ],
-    "car": {
-        "color": "Red",
-        "id": 1
-    }
+    "car": {"color": "Red", "id": 1},
 }
 
 orm_update_output_data = {
@@ -194,33 +144,16 @@ orm_update_output_data = {
             "name": "Jane",
             "id": 2,
             "popsicles": [
-                {
-                    "flavor": "Lemon",
-                    "id": 2
-                },
-                {
-                    "flavor": "Cola",
-                    "id": 4
-                },
-                {
-                    "flavor": "Apple",
-                    "id": 5
-                }
-            ]
+                {"flavor": "Lemon", "id": 2},
+                {"flavor": "Cola", "id": 4},
+                {"flavor": "Apple", "id": 5},
+            ],
         },
         {
             "name": "Jack",
             "id": 3,
-            "popsicles": [
-                {
-                    "flavor": "Strawberry",
-                    "id": 6
-                }
-            ]
-        }
+            "popsicles": [{"flavor": "Strawberry", "id": 6}],
+        },
     ],
-    "car": {
-        "color": "Red",
-        "id": 1
-    }
+    "car": {"color": "Red", "id": 1},
 }

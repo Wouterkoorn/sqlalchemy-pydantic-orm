@@ -1,10 +1,10 @@
-from typing import Optional, List
-
-from pydantic import PrivateAttr
-from sqlalchemy.orm.decl_api import DeclarativeMeta
-from sqlalchemy_pydantic_orm import ORMBaseSchema
+from typing import List, Optional
 
 import models
+from pydantic import PrivateAttr
+from sqlalchemy.orm.decl_api import DeclarativeMeta
+
+from sqlalchemy_pydantic_orm import ORMBaseSchema
 
 
 # Base models
