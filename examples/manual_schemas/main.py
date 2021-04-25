@@ -38,7 +38,6 @@ update_dict = {
 }
 
 with ConnectionDatabase() as db:
-    raise ValueError
     create_schema = schemas.ParentCreate.parse_obj(create_dict)
     parent_db = create_schema.orm_create()
     db.add(parent_db)
