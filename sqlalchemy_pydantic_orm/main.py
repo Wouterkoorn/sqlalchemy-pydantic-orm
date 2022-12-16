@@ -6,7 +6,7 @@ schemas from SQLAlchemy models.
 
 
 The ORMBaseSchema is an extension of the Pydantic's BaseModel. It can use the
-fields defined in its own schema to create a SQLAlchemy model, it can do that
+fields defined in it's own schema to create a SQLAlchemy model, it can do that
 by using a mandatory predefined link to a corresponding SQLAlchemy model.
 
 References:
@@ -35,13 +35,13 @@ class ORMBaseSchema(BaseModel):
         """The init is used for validation and throwing errors where needed.
 
         Pydantic catches all ValueError's in initialization, and then outputs
-        the error message in an easy-to-read format with the specific class
+        the error message in a easy to read format with the specific class
         name displayed.
         Every error is given the "sqlalchemy-pydantic-orm" identifier to
         distinguish between Pydantic's or SQLAlchemy's own errors
         and those of this package.
 
-        For performance, it's better to execute the `super().__init__()` as late
+        For performance its better to execute the `super().__init__()` as late
         as possible, only the _orm_model check requires it to work properly.
 
         Args:
@@ -88,7 +88,7 @@ class ORMBaseSchema(BaseModel):
 
         This variable/property has a leading underscore and can only be
         assigned as PrivateAttr (Pydantic). This is because a Pydantic schema
-        iterates over its own fields and would otherwise cause problems when
+        iterates over it's own fields and would otherwise cause problems when
         encountering this variable/property.
 
         Returns:
@@ -96,15 +96,13 @@ class ORMBaseSchema(BaseModel):
         """
         pass
 
-    def orm_create(self, db: Session, **extra_fields: Any) -> DeclarativeMeta:
+    def orm_create(self, **extra_fields: Any) -> DeclarativeMeta:
         """Method to convert a (nested) pydantic schema to a SQLAlchemy model.
 
         Using the validated fields in this class, together with the defined
         _orm_model, this recursive methods creates a (nested) SQLAlchemy model.
 
         Args:
-            db (Session):
-                Database session used for `.add()` and `.delete()`.
             extra_fields (Any):
                 Extra fields (keyword arguments) not defined in the pydantic
                 schema used by the top level ORM model. The fields in the
@@ -128,8 +126,7 @@ class ORMBaseSchema(BaseModel):
             field_name = self.__fields__[field].alias
             value = getattr(self, field)
             if isinstance(value, ORMBaseSchema):  # One-to-one
-                current_level_fields[field_name] = value.to_orm(db=db)
-                # current_level_fields[field_name] = value.orm_create()
+                current_level_fields[field_name] = value.orm_create()
 
             elif isinstance(value, SUPPORTED_ITERABLES):  # One-to-many
                 models = []
@@ -140,8 +137,7 @@ class ORMBaseSchema(BaseModel):
                             f"inherited from '{ORMBaseSchema.__name__}' "
                             "(sqlalchemy-pydantic-orm)"
                         )
-                    # models.append(schema.orm_create())
-                    models.append(schema.to_orm(db=db, **extra_fields))
+                    models.append(schema.orm_create())
                 current_level_fields[field_name] = models
 
             else:  # value without relation
@@ -152,12 +148,12 @@ class ORMBaseSchema(BaseModel):
     def orm_update(self, db: Session, db_model: DeclarativeMeta) -> None:
         """Method to update a (nested) orm structure.
 
-        This method recursively updates an orm model with its relationships.
+        This method recursively updates an orm model with it's relationships.
 
         In one-to-many relationships, each provided item without an id gets
         added as new item with the `orm_create()` method. When a valid id is
         provided it updates the item with the `orm_update()` method. It also
-        keeps track of the parsed database items, and afterwards deletes any
+        keep track of the parsed database items, and afterwards deletes any
         unparsed item.
 
         Args:
@@ -190,7 +186,7 @@ class ORMBaseSchema(BaseModel):
                 if db_value:
                     update_value.orm_update(db, db_value)
                 else:
-                    setattr(db_model, field_name, update_value.orm_create(db=db))
+                    setattr(db_model, field_name, update_value.orm_create())
 
             elif isinstance(update_value, SUPPORTED_ITERABLES):  # One-to-many
                 parsed_items = set()
@@ -217,7 +213,7 @@ class ORMBaseSchema(BaseModel):
                         schema.orm_update(db, db_item)
                         parsed_items.add(db_item)
                     else:
-                        new_item = schema.orm_create(db=db)
+                        new_item = schema.orm_create()
                         parsed_items.add(new_item)
                         db_value.append(new_item)
 
@@ -235,11 +231,11 @@ class ORMBaseSchema(BaseModel):
         provided, it retrieves and updates that model.
 
         In contrary to the orm_create function on its own, this function does
-        add the newly created model to the database. So after this method
+        add the newly created model to the database. So after the this method
         has been executed you only need to call `db.commit()` after.
 
         Args:
-            db (Session): Database session used for `.add()` and `.delete()`.
+            db (Session):
             **extra_fields (Any):
 
         Returns:
@@ -250,7 +246,9 @@ class ORMBaseSchema(BaseModel):
             ValueError:
                 When the provided id is not found in the database
         """
-        id_ = self.__detect_id(**extra_fields)
+        id_ = getattr(self, "id", None)
+        if not id_ and "id" in extra_fields:  # Pydantic field has priority
+            id_ = extra_fields["id"]
         if id_:
             db_model = db.query(self._orm_model).get(id_)
             if not db_model:
@@ -262,13 +260,7 @@ class ORMBaseSchema(BaseModel):
                 )
             self.orm_update(db, db_model)
         else:
-            db_model = self.orm_create(db=db, **extra_fields)
+            db_model = self.orm_create(**extra_fields)
             db.add(db_model)
 
         return db_model
-
-    def __detect_id(self, **extra_fields: Any):
-        id_ = getattr(self, "id", None)
-        if not id_ and "id" in extra_fields:  # Pydantic field has priority
-            id_ = extra_fields["id"]
-        return id_

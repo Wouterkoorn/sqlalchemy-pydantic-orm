@@ -16,7 +16,6 @@ class Parent(Base):  # type: ignore
     name = Column(String, nullable=False)
 
     children = relationship("Child", cascade="all, delete")
-    phones = relationship("Phone", cascade="all, delete")
     car = relationship(
         "Car", cascade="all, delete", uselist=False, back_populates="owner"
     )
@@ -50,16 +49,6 @@ class Car(Base):  # type: ignore
     owner = relationship("Parent", back_populates="car")
 
 
-class Phone(Base):  # type: ignore
-    __tablename__ = "phones"
-
-    id = Column(Integer, primary_key=True, index=True, nullable=False)
-    color = Column(String, nullable=False)
-    owner_id = Column(Integer, ForeignKey("parents.id"), nullable=True)
-
-    owner = relationship("Parent", back_populates="phones")
-
-
 class PydanticCar(ORMBaseSchema):
     id: Optional[int]
     colour: str = Field(alias="color")  # mostly used for reserved names
@@ -82,19 +71,11 @@ class PydanticChild(ORMBaseSchema):
     _orm_model = PrivateAttr(Child)
 
 
-class PydanticPhone(ORMBaseSchema):
-    id: Optional[int]
-    color: str = Field(alias="color")  # mostly used for reserved names
-
-    _orm_model = PrivateAttr(Phone)
-
-
 class PydanticParent(ORMBaseSchema):
     id: Optional[int]
     name: str
-    children: Optional[List[PydanticChild]]
-    phones: Optional[List[PydanticPhone]]
-    car: Optional[PydanticCar]
+    children: List[PydanticChild]
+    car: PydanticCar
 
     _orm_model = PrivateAttr(Parent)
 
@@ -135,7 +116,6 @@ orm_create_output_data = {
         },
     ],
     "car": {"color": "Blue", "id": 1},
-    'phones': [],
 }
 
 orm_update_input_data = {
@@ -176,24 +156,4 @@ orm_update_output_data = {
         },
     ],
     "car": {"color": "Red", "id": 1},
-    'phones': [],
-}
-
-orm_create_and_update_input_data = {
-    "name": "Lancelot",
-    "children": [],
-    "phones": []
-}
-orm_update_input_data_phone = {
-    "color": "red",
-}
-orm_create_and_update_output_data = {
-    "name": "Lancelot",
-    "id": 2,
-    "children": [],
-    "phones": [{
-        "id": 1,
-        "color": "red"
-    }],
-    "car": None,
 }
