@@ -124,28 +124,29 @@ class ORMBaseSchema(BaseModel):
                 When a list is not fully consisted of other ORM schemas.
         """
         current_level_fields = {}
-        for field in self.__fields_set__:
-            field_name = self.__fields__[field].alias
-            value = getattr(self, field)
-            if isinstance(value, ORMBaseSchema):  # One-to-one
-                current_level_fields[field_name] = value.to_orm(db=db)
-                # current_level_fields[field_name] = value.orm_create()
+        for key, field in self.__fields__.items():
+            field_name = field.alias
+            value = getattr(self, key)
+            if value is not None:
+                # nullable value not provided must be passed.
+                if isinstance(value, ORMBaseSchema):  # One-to-one
+                    current_level_fields[field_name] = value.to_orm(db=db)
+                    # current_level_fields[field_name] = value.orm_create()
+                elif isinstance(value, SUPPORTED_ITERABLES):  # One-to-many
+                    models = []
+                    for schema in value:
+                        if not isinstance(schema, ORMBaseSchema):
+                            raise TypeError(
+                                "Lists should only contain other schemas "
+                                f"inherited from '{ORMBaseSchema.__name__}' "
+                                "(sqlalchemy-pydantic-orm)"
+                            )
+                        # models.append(schema.orm_create())
+                        models.append(schema.to_orm(db=db, **extra_fields))
+                    current_level_fields[field_name] = models
 
-            elif isinstance(value, SUPPORTED_ITERABLES):  # One-to-many
-                models = []
-                for schema in value:
-                    if not isinstance(schema, ORMBaseSchema):
-                        raise TypeError(
-                            "Lists should only contain other schemas "
-                            f"inherited from '{ORMBaseSchema.__name__}' "
-                            "(sqlalchemy-pydantic-orm)"
-                        )
-                    # models.append(schema.orm_create())
-                    models.append(schema.to_orm(db=db, **extra_fields))
-                current_level_fields[field_name] = models
-
-            else:  # value without relation
-                current_level_fields[field_name] = value
+                else:  # value without relation
+                    current_level_fields[field_name] = value
 
         return self._orm_model(**extra_fields, **current_level_fields)
 
@@ -182,50 +183,51 @@ class ORMBaseSchema(BaseModel):
                 f"defined _orm_model '{self._orm_model.__name__}' "
                 "(sqlalchemy-pydantic-orm)"
             )
-        for field in self.__fields_set__:
-            field_name = self.__fields__[field].alias
-            db_value = getattr(db_model, field_name)
-            update_value = getattr(self, field)
-            if isinstance(update_value, ORMBaseSchema):  # One-to-one
-                if db_value:
-                    update_value.orm_update(db, db_value)
-                else:
-                    setattr(db_model, field_name, update_value.orm_create(db=db))
-
-            elif isinstance(update_value, SUPPORTED_ITERABLES):  # One-to-many
-                parsed_items = set()
-                for schema in update_value:
-                    if not isinstance(schema, ORMBaseSchema):
-                        raise TypeError(
-                            "Lists should only contain other schemas "
-                            f"inherited from '{ORMBaseSchema.__name__}' "
-                            "(sqlalchemy-pydantic-orm)"
-                        )
-                    if item_id := getattr(schema, "id", None):
-                        try:
-                            db_item = next(
-                                item for item in db_value if item.id == item_id
-                            )
-                        except StopIteration:
-                            raise ValueError(
-                                f"Provided id '{item_id}' "
-                                f"for field '{field_name}' "
-                                "can't be found in the database "
-                                "(sqlalchemy-pydantic-orm)"
-                            ) from None  # removes unnecessary traceback
-
-                        schema.orm_update(db, db_item)
-                        parsed_items.add(db_item)
+        for key, field in self.__fields__.items():
+            field_name = field.alias
+            db_value = getattr(db_model, key)
+            update_value = getattr(self, key)
+            if update_value is not None:
+                if isinstance(update_value, ORMBaseSchema):  # One-to-one
+                    if db_value:
+                        update_value.orm_update(db, db_value)
                     else:
-                        new_item = schema.orm_create(db=db)
-                        parsed_items.add(new_item)
-                        db_value.append(new_item)
+                        setattr(db_model, field_name, update_value.orm_create(db=db))
 
-                for db_item in db_value:
-                    if db_item not in parsed_items:
-                        db.delete(db_item)
-            else:
-                setattr(db_model, field_name, update_value)
+                elif isinstance(update_value, SUPPORTED_ITERABLES):  # One-to-many
+                    parsed_items = set()
+                    for schema in update_value:
+                        if not isinstance(schema, ORMBaseSchema):
+                            raise TypeError(
+                                "Lists should only contain other schemas "
+                                f"inherited from '{ORMBaseSchema.__name__}' "
+                                "(sqlalchemy-pydantic-orm)"
+                            )
+                        if item_id := getattr(schema, "id", None):
+                            try:
+                                db_item = next(
+                                    item for item in db_value if item.id == item_id
+                                )
+                            except StopIteration:
+                                raise ValueError(
+                                    f"Provided id '{item_id}' "
+                                    f"for field '{field_name}' "
+                                    "can't be found in the database "
+                                    "(sqlalchemy-pydantic-orm)"
+                                ) from None  # removes unnecessary traceback
+
+                            schema.orm_update(db, db_item)
+                            parsed_items.add(db_item)
+                        else:
+                            new_item = schema.orm_create(db=db)
+                            parsed_items.add(new_item)
+                            db_value.append(new_item)
+
+                    for db_item in db_value:
+                        if db_item not in parsed_items:
+                            db.delete(db_item)
+                else:
+                    setattr(db_model, field_name, update_value)
 
     def to_orm(self, db: Session, **extra_fields: Any) -> DeclarativeMeta:
         """Method that combines the functionality of orm_create & orm_update.
