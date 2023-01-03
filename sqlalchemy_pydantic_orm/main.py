@@ -185,7 +185,7 @@ class ORMBaseSchema(BaseModel):
             )
         for key, field in self.__fields__.items():
             field_name = field.alias
-            db_value = getattr(db_model, key)
+            db_value = getattr(db_model, field_name)
             update_value = getattr(self, key)
             if update_value is not None:
                 if isinstance(update_value, ORMBaseSchema):  # One-to-one

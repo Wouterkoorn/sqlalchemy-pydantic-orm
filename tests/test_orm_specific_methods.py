@@ -20,7 +20,7 @@ db: Session = DatabaseSession()
 
 def test_orm_create() -> None:
     schema_in = PydanticParent.parse_obj(orm_create_input_data)
-    db_model = schema_in.orm_create()
+    db_model = schema_in.orm_create(db)
     db.add(db_model)
     db.commit()
     db.refresh(db_model)
