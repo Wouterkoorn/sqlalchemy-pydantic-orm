@@ -26,7 +26,7 @@ setup(
     long_description=LONG_DESCRIPTION,
     packages=find_packages(),
     python_requires=">=3.8",
-    install_requires=["pydantic ~= 1.8.1", "sqlalchemy ~= 1.4.11"],
+    install_requires=["pydantic >= 1.8.1", "sqlalchemy >= 1.4.11"],
     extras_require={
         "dev": [
             "pytest >= 6.2.3",
